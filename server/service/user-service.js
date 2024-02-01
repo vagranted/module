@@ -5,7 +5,7 @@ const mailService = require('./mail-service');
 const tokenService = require('./token-service');
 const UserDto = require('../dtos/user-dto');
 const ApiError = require('../exceptions/api-error');
-
+const jwt = require('jsonwebtoken');
 const userDto = new UserDto(UserModel);
 
 
@@ -104,6 +104,38 @@ class UserService {
         const users =  await UserModel.find();
         return users;
     }
+
+    async changePassword(email, currentPassword, newPassword) {
+        // Находим пользователя по email
+        const user = await UserModel.findOne({ email });
+        if (!user) {
+            throw ApiError.BadRequest('Пользователь с таким email не найден');
+        }
+
+        // Проверяем соответствие текущего пароля
+        const isMatchPassword = await bcrypt.compare(currentPassword, user.password);
+        if (!isMatchPassword) {
+            throw ApiError.BadRequest('Настоящий пароль неверен');
+        }
+
+        // Хэшируем новый пароль перед сохранением в базу данных
+        const hashedNewPassword = await bcrypt.hash(newPassword, 10); // Увеличьте значение "salt rounds" при необходимости
+
+        // Обновляем пароль пользователя в базе данных
+        user.password = hashedNewPassword;
+        await user.save();
+
+        // Отправляем уведомление о смене пароля на почту
+        await mailService.sendPasswordChangeNotification(email);
+
+        // Возвращаем сообщение об успешной смене пароля
+        return { message: 'Пароль успешно изменен' };
+    }
+
+
+
+
 }
+
 
 module.exports = new UserService();

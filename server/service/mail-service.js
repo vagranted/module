@@ -31,19 +31,17 @@ class MailService {
         })
     }
 
-    async sendPasswordResetMail(to, link) {
+    async sendPasswordEmail(to, link) {
         await this.transporter.sendMail({
             from: process.env.SMTP_USER,
             to,
-            subject: 'Сбросить пароль ' + process.env.API_URL,
-            text: `Чтобы сбросить пароль перейдите по ссылке: ${link}`,
+            subject: 'Сброс пароля успешно осуществлен ' + process.env.API_URL,
+            text: '',
             html:
                 `
                 <div>
-                    <h1>Reset password</h1>
-                    <h2>If you want to reset password follow the link </h2>
-                    <a href="${link}">${link}</a>
-                </div>>
+                    <h1>Внимание!!! Если это сделали не вы, то сообщите на admin@mail.ru</h1>
+                </div>
             `
         })
     }

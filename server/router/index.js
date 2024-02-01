@@ -7,6 +7,7 @@ const authMiddleware = require('../middlewares/auth-middleware');
 const changePasswordController = require('../controllers/changePassword-controller');
 
 
+
 router.post('/registration', passwordMiddleware,
     body('email').isEmail(),
     body('password')
@@ -25,6 +26,7 @@ router.get('/activate/:link', userController.activate);
 router.get('/refresh', userController.refresh);
 router.get('/users', authMiddleware, userController.getUsers);
 router.post('/changePassword', body('email').isEmail(), changePasswordController);
+
 
 
 module.exports = router
