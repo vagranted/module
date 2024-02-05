@@ -6,6 +6,7 @@ const UserModel = require('../models/user-model');
 const mailService = require("../service/mail-service");
 
 
+
 async function changePassword(req, res, next) {
     try {
         const { email, currentPassword, newPassword } = req.body;
@@ -25,7 +26,7 @@ async function changePassword(req, res, next) {
         }
 
         // Хэшируем новый пароль перед сохранением в базу данных
-        const hashedNewPassword = await bcrypt.hash(newPassword, 3); // Увеличил значение "salt rounds"
+        const hashedNewPassword = await bcrypt.hash(newPassword, 3);
 
         // Обновляем пароль пользователя в базе данных
         user.password = hashedNewPassword;
@@ -42,4 +43,37 @@ async function changePassword(req, res, next) {
     }
 }
 
+/**
+ * @swagger
+ * /api/changePassword:
+ *   post:
+ *     summary: Изменение пароля пользователя
+ *     description: Изменение пароля пользователя с помощью электронной почты, текущего пароля и нового пароля.
+ *     tags:
+ *       - Пользователь
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               currentPassword:
+ *                 type: string
+ *               newPassword:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: Пароль успешно изменен
+ *       '400':
+ *         description: Неправильные данные или пароль пользователя
+ *       '500':
+ *         description: Внутренняя ошибка сервера
+ */
+
+
 module.exports = changePassword;
+
+
